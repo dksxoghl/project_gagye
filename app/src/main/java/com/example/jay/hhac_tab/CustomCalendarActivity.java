@@ -92,7 +92,14 @@ public class CustomCalendarActivity extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        Fragment fragment = new Fragment();
+        Bundle bundle = new Bundle(1); // 파라미터는 전달할 데이터 개수
+        bundle.putString("thisYear", String.valueOf(thisYear)); // key , value
+        fragment.setArguments(bundle);
     }
+
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -198,6 +205,10 @@ public class CustomCalendarActivity extends Fragment {
             }
         });
         return fv;
+
+
+
+
     }
 
     //해당 월에 표시할 일 수 구함

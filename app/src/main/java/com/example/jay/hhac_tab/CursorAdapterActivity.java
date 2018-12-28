@@ -1,5 +1,5 @@
 package com.example.jay.hhac_tab;
-// 어떠한 것들을 import했는지 확인 먼저 하세요 누나!! 대략적으로 이 클래스가 무슨 일을 하는 녀석인지 알기 쉬워져요
+
 
 import android.content.Context;
 import android.database.Cursor;

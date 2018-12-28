@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return new SearchActivity();
                 case 2:
-                    return new CustomCalendarActivity();
+                    return new GraphActivity();
                 default:
                     return new CustomCalendarActivity();
             }
