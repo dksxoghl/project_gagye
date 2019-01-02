@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="BackgroundColor">
+        <item>honeydew</item>
+        <item>mistyrose</item>
+        <item>lavender</item>
+        <item>default</item>
+    </string-array>
+    <string-array name="BackgroundColor_Values">
+        <item>#F0FFF0</item>
+        <item>#ffe4e1</item>
+        <item>#e6e6fa</item>
+        <item>#00000000</item>
+    </string-array>
+</resources>

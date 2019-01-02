@@ -12,13 +12,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class GraphActivity extends Fragment {
@@ -35,7 +44,7 @@ public class GraphActivity extends Fragment {
     Cursor cursor;
 
     LineChart lineChart;
-
+    BarChart barChart;
     public GraphActivity() {
 
     }
@@ -65,7 +74,7 @@ public class GraphActivity extends Fragment {
        /* String thisyear= getArguments().getString("thisYear");
         Log.d("연도값확인------------",thisyear);
          int thisYear= Integer.parseInt(thisyear);*/
-       int thisYear = 2018;
+      /* int thisYear = 2018;
         int jan = getIncome(thisYear,1);
         int feb = getIncome(thisYear,2);
         int mar = getIncome(thisYear,3);
@@ -80,7 +89,7 @@ public class GraphActivity extends Fragment {
         int dec = getIncome(thisYear,12);
 
         lineChart = (LineChart)fv.findViewById(R.id.chart);
-     /*   ArrayList<String> labels = new ArrayList<>();
+     *//*   ArrayList<String> labels = new ArrayList<>();
         labels.add("January");
         labels.add("February");
         labels.add("March");
@@ -93,7 +102,7 @@ public class GraphActivity extends Fragment {
         labels.add("October");
         labels.add("November");
         labels.add("December");
-*/
+*//*
         ArrayList<Entry> entries = new ArrayList<>();
         entries.add(new Entry(1,jan));
         entries.add(new Entry(2,feb));
@@ -119,7 +128,7 @@ public class GraphActivity extends Fragment {
         lineDataSet1.setDrawFilled(true); //선아래로 색상표시
         lineDataSet1.setFillColor(Color.blue(80));
         lineDataSet1.setDrawValues(true);
-        /*LineData lineData = new LineData(lineDataSet1);*/
+        *//*LineData lineData = new LineData(lineDataSet1);*//*
 
         LineDataSet lineDataSet2 = new LineDataSet(expend, "지출");
         lineDataSet2.setColors(Color.RED);
@@ -127,13 +136,138 @@ public class GraphActivity extends Fragment {
         lineDataSet2.setDrawFilled(true); //선아래로 색상표시
         lineDataSet2.setFillColor(Color.red(80));
         lineDataSet2.setDrawValues(true);
-        /*LineData lineData2 = new LineData(lineDataSet2);*/
+        *//*LineData lineData2 = new LineData(lineDataSet2);*//*
 
         lineDataSets.add(lineDataSet1);
         lineDataSets.add(lineDataSet2);
 
         lineChart.setData(new LineData(lineDataSets));
-        lineChart.animateY(2000);
+        lineChart.animateY(2000);*/
+        lineChart = (LineChart) fv.findViewById(R.id.chart);
+
+        String isql;
+        String csql;
+        String sum;
+
+        //데이터베이스 설정
+        dbh = new DBHelper(getActivity());
+        db = dbh.getWritableDatabase();
+
+        List<Entry> entries = new ArrayList<>();
+        List<Entry> entries2 = new ArrayList<>();
+
+        for (int i = 1; i < 13; i++) {
+            isql = String.format("select sum(hhac_income) from %s where hhac_date like '%s'", "hhac_db", 2018 + "/" + i + "/" + "%");
+            cursor = db.rawQuery(isql, null);
+            cursor.moveToNext();
+            sum = String.valueOf(cursor.getInt(0));
+            entries.add(new Entry(i, Integer.parseInt(sum)));
+        }
+        for (int i = 1; i < 13; i++) {
+            isql = String.format("select sum(hhac_cost) from %s where hhac_date like '%s'", "hhac_db", 2018 + "/" + i + "/" + "%");
+            cursor = db.rawQuery(isql, null);
+            cursor.moveToNext();
+            sum = String.valueOf(cursor.getInt(0));
+            entries2.add(new Entry(i, Integer.parseInt(sum)));
+        }
+
+        LineDataSet lineDataSet = new LineDataSet(entries, "수입");
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setCircleRadius(3);
+        lineDataSet.setCircleColor(Color.parseColor("#d0dffe"));
+        lineDataSet.setCircleHoleColor(Color.BLUE);
+        lineDataSet.setColor(Color.parseColor("#d0dffe"));
+        lineDataSet.setDrawCircleHole(true);
+        lineDataSet.setDrawCircles(true);
+        lineDataSet.setDrawHorizontalHighlightIndicator(false);
+        lineDataSet.setDrawHighlightIndicators(false);
+
+        LineDataSet lineDataSet2 = new LineDataSet(entries2, "지출");
+        lineDataSet2.setLineWidth(2);
+        lineDataSet2.setCircleRadius(3);
+        lineDataSet2.setCircleColor(Color.parseColor("#fd9cb4"));
+        lineDataSet2.setCircleHoleColor(Color.RED);
+        lineDataSet2.setColor(Color.parseColor("#fd9cb4"));
+        lineDataSet2.setDrawCircleHole(true);
+        lineDataSet2.setDrawCircles(true);
+        lineDataSet2.setDrawHorizontalHighlightIndicator(false);
+        lineDataSet2.setDrawHighlightIndicators(false);
+
+        ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
+        lineDataSets.add(lineDataSet);
+        lineDataSets.add(lineDataSet2);
+        lineChart.setData(new LineData(lineDataSets));
+
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.BLACK);
+        xAxis.enableGridDashedLine(8, 24, 0);
+
+        YAxis yLAxis = lineChart.getAxisLeft();
+        yLAxis.setTextColor(Color.BLACK);
+
+        YAxis yRAxis = lineChart.getAxisRight();
+        yRAxis.setDrawLabels(false);
+        yRAxis.setDrawAxisLine(false);
+        yRAxis.setDrawGridLines(false);
+
+        Description description = new Description();
+        description.setText("");
+
+        lineChart.setDoubleTapToZoomEnabled(false);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setDescription(description);
+        lineChart.invalidate();
+
+        barChart = (BarChart) fv.findViewById(R.id.barchart);
+
+        List<BarEntry> entries3 = new ArrayList<>();
+        List<BarEntry> entries4 = new ArrayList<>();
+
+        for (int i = 1; i < 13; i++) {
+            csql = String.format("select sum(hhac_income) from %s where hhac_date like '%s'", "hhac_db", 2018 + "/" + i + "/" + "%");
+            cursor = db.rawQuery(csql, null);
+            cursor.moveToNext();
+            sum = String.valueOf(cursor.getInt(0));
+            entries3.add(new BarEntry(i, Integer.parseInt(sum)));
+        }
+        for (int i = 1; i < 13; i++) {
+            csql = String.format("select sum(hhac_cost) from %s where hhac_date like '%s'", "hhac_db", 2018 + "/" + i + "/" + "%");
+            cursor = db.rawQuery(csql, null);
+            cursor.moveToNext();
+            sum = String.valueOf(cursor.getInt(0));
+            entries4.add(new BarEntry(i, Integer.parseInt(sum)));
+        }
+
+        BarDataSet barDataSet = new BarDataSet(entries3, "수입");
+        barDataSet.setColor(Color.parseColor("#d0dffe"));
+
+        BarDataSet barDataSet2 = new BarDataSet(entries4, "지출");
+        barDataSet2.setColor(Color.parseColor("#fd9cb4"));
+
+        ArrayList<IBarDataSet> barDataSets = new ArrayList<>();
+        barDataSets.add(barDataSet);
+        barDataSets.add(barDataSet2);
+        barChart.setData(new BarData(barDataSets));
+
+        XAxis xAxis2 = barChart.getXAxis();
+        xAxis2.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis2.setTextColor(Color.BLACK);
+        xAxis2.enableGridDashedLine(8, 24, 0);
+
+        YAxis yLAxis2 = barChart.getAxisLeft();
+        yLAxis2.setTextColor(Color.BLACK);
+
+        YAxis yRAxis2 = barChart.getAxisRight();
+        yRAxis2.setDrawLabels(false);
+        yRAxis2.setDrawAxisLine(false);
+        yRAxis2.setDrawGridLines(false);
+
+
+        barChart.setDoubleTapToZoomEnabled(false);
+        barChart.setDrawGridBackground(false);
+        barChart.setDescription(description);
+        barChart.invalidate();
         return fv;
     }
 
